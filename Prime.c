@@ -1,0 +1,96 @@
+// --- TO BE REMOVED BY MAKEFILE ---
+#include "stdio.h"
+// --- END OF TO BE REMOVED ---
+#define SIEVE_SIZE 64
+#define MODULO     30
+
+int offsets[8] = { 1 , 7 , 11 , 13 , 17 ,19 , 23, 29 };
+
+unsigned char maskForCrossing[ MODULO ] = {
+  0, 0xfe, 0, 0, 0, 0,
+  0, 0xfd, 0, 0, 0, 0xfb,
+  0, 0xf7, 0, 0, 0, 0xef,
+  0, 0xdf, 0, 0, 0, 0xbf,
+  0,    0, 0, 0, 0, 0x7f  
+};
+
+typedef struct SieveSegment
+{
+  unsigned char sieve;
+} SieveSegment;
+
+SieveSegment eratSieveSegment[ SIEVE_SIZE ];
+
+//Array for stocking primes. Must be done dynamically <- TODO
+int primeStock[4096] = { 2, 3 , 5 };
+int numPrimes = 3;
+
+int sieveCurrentIdx = 0;
+int bigPrimeOffset = 0;
+
+void init_sieve( int sieveSize )
+{
+  int i;
+  eratSieveSegment[ 0 ].sieve = 0xfe; //Considering 1 not as a prime
+  for( i = 1; i < SIEVE_SIZE ; i++ ){
+    eratSieveSegment[ i ].sieve = 0xff;
+  }
+}
+
+int primesInNextSegment( int* primes )
+{
+  unsigned char sieveSeg = eratSieveSegment[ sieveCurrentIdx ].sieve;
+  
+  int idx = 0;
+  int num = 0;
+  while( sieveSeg > 0 ) 
+  {
+    if( sieveSeg & 0x01 )
+    {
+      primes[ num ++ ] = bigPrimeOffset + offsets[ idx ];
+    }
+    sieveSeg >>= 1;
+    idx++;
+  }
+  return num;
+}
+
+void crossSieve( int prime )
+{
+  int idxInOffsets = 1;
+  int largeModuloOffset = 0;
+  int multiple = offsets[ idxInOffsets ]* prime;
+  while( multiple < MODULO * SIEVE_SIZE )
+  {
+    eratSieveSegment[ multiple / MODULO ].sieve &= maskForCrossing[ multiple % MODULO ] ;
+    idxInOffsets ++;
+    if( idxInOffsets == 8 )
+    {
+      idxInOffsets = 0; 
+      largeModuloOffset += MODULO;
+    }
+    multiple = prime*( largeModuloOffset +  offsets[ idxInOffsets ] );
+  }
+}
+
+void processSieve()
+{
+  printf( "%d\n", 2 );
+  printf( "%d\n", 3 );
+  printf( "%d\n", 5 );
+  while( sieveCurrentIdx < SIEVE_SIZE ) 
+  {
+    int nextPrimes[8];
+    int numPrimes = primesInNextSegment( nextPrimes );
+    int i;
+    //printf( "-> %02x <-\n", eratSieveSegment[ sieveCurrentIdx ] );
+    for( i = 0 ; i < numPrimes; i ++ )
+    {
+      printf( "%d\n", nextPrimes[ i ] );
+      crossSieve( nextPrimes[ i ] );
+    }
+    
+    bigPrimeOffset += MODULO;
+    sieveCurrentIdx++;
+  }
+}
