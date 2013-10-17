@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #define Newx( x , y , z ) x = malloc( y*sizeof(z))
+#define Safefree( x )     free( x )
 // --- END OF TO BE REMOVED ---
 #define MODULO     30
 
@@ -30,13 +31,12 @@ int numPrimes = 3;
 int sieveCurrentIdx = 0;
 int bigPrimeOffset = 0;
 
-void init_sieve( int sieveSize )
+void init_sieve()
 {
   int i;
-  eratSize = sieveSize;
-  Newx(eratSieveSegment, sieveSize , SieveSegment);
+  
   eratSieveSegment[ 0 ].sieve = 0xfe; //Considering 1 not as a prime
-  for( i = 1; i < sieveSize ; i++ ){
+  for( i = 1; i < eratSize ; i++ ){
     eratSieveSegment[ i ].sieve = 0xff;
   }
 }
@@ -77,8 +77,11 @@ void crossSieve( int prime )
   }
 }
 
-void processSieve( )
+void processSieve( int sieveSize )
 {
+  eratSize = ( sieveSize + MODULO - 1 )/MODULO;
+  Newx(eratSieveSegment, eratSize , SieveSegment);
+  init_sieve();
   printf( "%d\n", 2 );
   printf( "%d\n", 3 );
   printf( "%d\n", 5 );
@@ -97,4 +100,5 @@ void processSieve( )
     bigPrimeOffset += MODULO;
     sieveCurrentIdx++;
   }
+  Safefree( eratSieveSegment );
 }

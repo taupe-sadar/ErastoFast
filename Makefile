@@ -2,7 +2,7 @@ FLAGS = -Wall -g -O0
 
 all : test PrimeC.pl
 
-PrimeC.pl : Prime.c
+PrimeC.pl : Prime.c writeInlineScript.pl
 	perl writeInlineScript.pl Prime.c PrimeC.pl 
 
 Prime.o : Prime.c

@@ -2,7 +2,6 @@
 
 int main( int  argc, char ** argv )
 {
-  init_sieve(5000);
-  processSieve();
+  processSieve(150000);
   return 0;
 }
