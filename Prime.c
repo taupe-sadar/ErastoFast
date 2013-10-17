@@ -31,10 +31,14 @@ int numPrimes = 3;
 int sieveCurrentIdx = 0;
 int bigPrimeOffset = 0;
 
+int count = 0;
+
 void init_sieve()
 {
   int i;
-  
+  sieveCurrentIdx = 0;
+  bigPrimeOffset = 0;
+
   eratSieveSegment[ 0 ].sieve = 0xfe; //Considering 1 not as a prime
   for( i = 1; i < eratSize ; i++ ){
     eratSieveSegment[ i ].sieve = 0xff;
@@ -79,6 +83,7 @@ void crossSieve( int prime )
 
 void processSieve( int sieveSize )
 {
+  count ++;
   eratSize = ( sieveSize + MODULO - 1 )/MODULO;
   Newx(eratSieveSegment, eratSize , SieveSegment);
   init_sieve();
@@ -100,5 +105,6 @@ void processSieve( int sieveSize )
     bigPrimeOffset += MODULO;
     sieveCurrentIdx++;
   }
+  printf("%d\n",count);
   Safefree( eratSieveSegment );
 }

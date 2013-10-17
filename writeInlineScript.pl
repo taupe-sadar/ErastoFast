@@ -35,7 +35,9 @@ use Data::Dumper;
 
 use Inline C;
 
-processSieve( 150000 );
+  processSieve(1500);
+  processSieve(1500);
+  processSieve(1500);
 
 __END__
 __C__
