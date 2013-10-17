@@ -1,7 +1,8 @@
 // --- TO BE REMOVED BY MAKEFILE ---
 #include "stdio.h"
+#include "stdlib.h"
+#define Newx( x , y , z ) x = malloc( y*sizeof(z))
 // --- END OF TO BE REMOVED ---
-#define SIEVE_SIZE 64
 #define MODULO     30
 
 int offsets[8] = { 1 , 7 , 11 , 13 , 17 ,19 , 23, 29 };
@@ -19,7 +20,8 @@ typedef struct SieveSegment
   unsigned char sieve;
 } SieveSegment;
 
-SieveSegment eratSieveSegment[ SIEVE_SIZE ];
+SieveSegment * eratSieveSegment;
+int eratSize = 0;
 
 //Array for stocking primes. Must be done dynamically <- TODO
 int primeStock[4096] = { 2, 3 , 5 };
@@ -31,8 +33,10 @@ int bigPrimeOffset = 0;
 void init_sieve( int sieveSize )
 {
   int i;
+  eratSize = sieveSize;
+  Newx(eratSieveSegment, sieveSize , SieveSegment);
   eratSieveSegment[ 0 ].sieve = 0xfe; //Considering 1 not as a prime
-  for( i = 1; i < SIEVE_SIZE ; i++ ){
+  for( i = 1; i < sieveSize ; i++ ){
     eratSieveSegment[ i ].sieve = 0xff;
   }
 }
@@ -60,7 +64,7 @@ void crossSieve( int prime )
   int idxInOffsets = 1;
   int largeModuloOffset = 0;
   int multiple = offsets[ idxInOffsets ]* prime;
-  while( multiple < MODULO * SIEVE_SIZE )
+  while( multiple < MODULO * eratSize )
   {
     eratSieveSegment[ multiple / MODULO ].sieve &= maskForCrossing[ multiple % MODULO ] ;
     idxInOffsets ++;
@@ -73,12 +77,12 @@ void crossSieve( int prime )
   }
 }
 
-void processSieve()
+void processSieve( )
 {
   printf( "%d\n", 2 );
   printf( "%d\n", 3 );
   printf( "%d\n", 5 );
-  while( sieveCurrentIdx < SIEVE_SIZE ) 
+  while( sieveCurrentIdx < eratSize ) 
   {
     int nextPrimes[8];
     int numPrimes = primesInNextSegment( nextPrimes );
