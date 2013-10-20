@@ -222,3 +222,18 @@ int getHighestSievedValue()
 {
   return highestSievedValue;
 }
+
+int freeStock( PrimeStock* pStock )
+{
+  if( pStock->nextStock != NULL )
+  {
+    freeStock( pStock->nextStock  );
+    pStock->nextStock = NULL;
+  }
+  Safefree( pStock );
+}
+
+int freeSieve()
+{
+  freeStock( chainedPrimeStock );
+}

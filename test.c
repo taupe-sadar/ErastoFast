@@ -11,7 +11,7 @@ int main( int  argc, char ** argv )
   {
     printf( "%d\n", getNthPrime( i ) );
   }
-  
+  freeSieve();
   
   return 0;
 }
