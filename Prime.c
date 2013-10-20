@@ -9,6 +9,14 @@
 
 int offsets[8] = { 1 , 7 , 11 , 13 , 17 ,19 , 23, 29 };
 
+int ceilLambdaForFirstMultiple [ MODULO ] = {
+  0, 0, 1, 1, 1, 1,
+  1, 1, 2, 2, 2, 2,
+  3, 3, 4, 4, 4, 4,
+  5, 5, 6, 6, 6, 6,
+  7, 7, 7, 7, 7, 7  
+};
+
 unsigned char maskForCrossing[ MODULO ] = {
   0, 0xfe, 0, 0, 0, 0,
   0, 0xfd, 0, 0, 0, 0xfb,
@@ -36,6 +44,7 @@ PrimeStock* chainedPrimeStock = NULL;
 PrimeStock* lastPrimeStock = NULL;
 int numRegisteredPrimes = 0;
 
+int highestSievedValue = 0;
 int sieveCurrentIdx = 0;
 int bigPrimeOffset = 0;
 
@@ -71,12 +80,13 @@ void initSieve()
 {
   int i;
   sieveCurrentIdx = 0;
-  bigPrimeOffset = 0;
-
-  eratSieveSegment[ 0 ].sieve = 0xfe; //Considering 1 not as a prime
-  for( i = 1; i < eratSize ; i++ ){
+  
+  for( i = 0; i < eratSize ; i++ )
     eratSieveSegment[ i ].sieve = 0xff;
-  }
+  
+  if( bigPrimeOffset == 0 )
+    eratSieveSegment[ 0 ].sieve = 0xfe; //Considering 1 not as a prime
+
 }
 
 int primesInNextSegment( int* primes )
@@ -97,14 +107,32 @@ int primesInNextSegment( int* primes )
   return num;
 }
 
+void calcFirstMultiple( int prime, int* pidxInOffsets, int* plargeModuloOffset  )
+{
+  int firstLambda = ( highestSievedValue + prime - 1 ) / prime;
+  
+  if( firstLambda == 1 ) //Keeping init values : idx = 1, largeOffset = 0
+    return;
+  
+
+  *pidxInOffsets = ceilLambdaForFirstMultiple[ firstLambda % MODULO ];
+  *plargeModuloOffset = firstLambda / MODULO;
+}
+
 void crossSieve( int prime )
 {
   int idxInOffsets = 1;
   int largeModuloOffset = 0;
+  
+  if( highestSievedValue > 0 )
+    calcFirstMultiple( prime, &idxInOffsets, &largeModuloOffset );
+  
   int multiple = offsets[ idxInOffsets ]* prime;
-  while( multiple < MODULO * eratSize )
+   
+  int maxMultiple = MODULO * eratSize + highestSievedValue ;
+  while( multiple < maxMultiple )
   {
-    eratSieveSegment[ multiple / MODULO ].sieve &= maskForCrossing[ multiple % MODULO ] ;
+    eratSieveSegment[ (multiple - highestSievedValue )/ MODULO  ].sieve &= maskForCrossing[ multiple % MODULO ] ;
     idxInOffsets ++;
     if( idxInOffsets == 8 )
     {
@@ -115,15 +143,37 @@ void crossSieve( int prime )
   }
 }
 
-void processSieve( int sieveSize )
+void crossWithKnownPrimes()
 {
+  PrimeStock* pStock = chainedPrimeStock;
+  int idx = 3; //Skipping 2, 3, 5,
+  do
+  {
+    for(; idx < pStock->num ; idx ++ )
+    {
+      crossSieve( pStock->primes[ idx ] );
+    }
+    idx = 0;
+    pStock = pStock->nextStock;
+  }
+  while( pStock != NULL );
+}
+
+void processSieve( int sieveMax )
+{
+  if( sieveMax <= highestSievedValue )
+    return;
+  
   if( chainedPrimeStock == NULL )
     initPrimeStock();
 
-  eratSize = ( sieveSize + MODULO - 1 )/MODULO;
+  eratSize = ( sieveMax - highestSievedValue + MODULO - 1 )/MODULO;
   Newx(eratSieveSegment, eratSize , SieveSegment);
   initSieve();
+  
+  crossWithKnownPrimes();
 
+  
   while( sieveCurrentIdx < eratSize ) 
   {
     int nextPrimes[8];
@@ -140,6 +190,9 @@ void processSieve( int sieveSize )
     bigPrimeOffset += MODULO;
     sieveCurrentIdx++;
   }
+  
+  highestSievedValue = bigPrimeOffset;
+  
   Safefree( eratSieveSegment );
 }
 
@@ -158,4 +211,14 @@ int getNthPrime( int n )
     pStock = pStock->nextStock;
     
   return  pStock->primes[ idxInStock ];
+}
+
+int getNumCalculatedPrimes()
+{
+  return numRegisteredPrimes;
+}
+
+int getHighestSievedValue()
+{
+  return highestSievedValue;
 }

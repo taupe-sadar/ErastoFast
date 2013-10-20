@@ -30,17 +30,23 @@ close( CFILE);
 
 sub startOfPerlFile
 {
-  return "use warnings;
+  return 'use warnings;
 use Data::Dumper;
 
 use Inline C;
 
-  processSieve(1500);
-  processSieve(1500);
-  processSieve(1500);
+  processSieve(50000);
+  printf( "%d\n", getNthPrime( 14 ) );
+  printf( "%d\n", getNthPrime( 56 ) );
+  printf( "%d\n", getNthPrime( 5000 ) );
+  printf( "%d\n", getNthPrime( 200 ) );
+  printf( "%d\n", getNthPrime( 4095 ) );
+  printf( "%d\n", getNthPrime( 5133 ) );
+
+
 
 __END__
 __C__
 
-";
+';
 }
