@@ -1,9 +1,9 @@
 FLAGS = -Wall -g -O0
 
-all : test PrimeC.pl
+all : test PrimeC.pm
 
-PrimeC.pl : Prime.c writeInlineScript.pl
-	perl writeInlineScript.pl Prime.c PrimeC.pl 
+PrimeC.pm : Prime.c writeInlineScript.pl
+	perl writeInlineScript.pl Prime.c PrimeC.pm 
 
 Prime.o : Prime.c
 	gcc Prime.c -o Prime.o -c $(FLAGS)
