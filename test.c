@@ -27,7 +27,7 @@ int main( int  argc, char ** argv )
   while(count<number)
   {
     int prime = next_prime();
-    prime ++;
+    printf( "%d\n", prime ) ;
     count++;
   }
 

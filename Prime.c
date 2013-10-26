@@ -114,9 +114,10 @@ void calcFirstMultiple( int prime, int* pidxInOffsets, int* plargeModuloOffset  
   if( firstLambda == 1 ) //Keeping init values : idx = 1, largeOffset = 0
     return;
   
-
-  *pidxInOffsets = ceilLambdaForFirstMultiple[ firstLambda % MODULO ];
-  *plargeModuloOffset = firstLambda / MODULO;
+  int moduloIdx = firstLambda % MODULO;
+  
+  *pidxInOffsets = ceilLambdaForFirstMultiple[ moduloIdx ];
+  *plargeModuloOffset = firstLambda - moduloIdx ;
 }
 
 void crossSieve( int prime )
@@ -127,8 +128,7 @@ void crossSieve( int prime )
   if( highestSievedValue > 0 )
     calcFirstMultiple( prime, &idxInOffsets, &largeModuloOffset );
   
-  int multiple = ( offsets[ idxInOffsets ] + largeModuloOffset * MODULO ) * prime;
-   
+  int multiple = ( offsets[ idxInOffsets ] + largeModuloOffset ) * prime;
   int maxMultiple = MODULO * eratSize + highestSievedValue ;
   while( multiple < maxMultiple )
   {
@@ -139,7 +139,7 @@ void crossSieve( int prime )
       idxInOffsets = 0; 
       largeModuloOffset += MODULO;
     }
-    multiple = prime*( largeModuloOffset * MODULO +  offsets[ idxInOffsets ] );
+    multiple = prime*( largeModuloOffset  +  offsets[ idxInOffsets ] );
   }
 }
 
