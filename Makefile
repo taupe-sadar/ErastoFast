@@ -15,4 +15,4 @@ test.o : test.c Prime.h
 	gcc test.c -o test.o -c $(FLAGS)
 
 clean :
-	rm -rf *.o Prime test
+	rm -rf *.o Prime test PrimeC.pm
