@@ -1,16 +1,37 @@
 #include "Prime.h"
 #include "stdio.h"
 
+static int index = 0;
+int crible_size = 30;
+int next_prime()
+{
+  while( index >=  getNumCalculatedPrimes()  )
+  {
+    crible_size*=2;
+    processSieve( crible_size );
+  }
+  
+  int p = getNthPrime( index );
+  
+  index ++;
+  return p;
+  
+};
+
 int main( int  argc, char ** argv )
 {
-  int i = 0; 
-  processSieve( 12000 );
-  processSieve( 3000 );
-  printf( "-----------------\n" );
-  for( ; i < 100; i++ )
+  
+  int count =0;
+  int number = 10001;
+  
+  while(count<number)
   {
-    printf( "%d\n", getNthPrime( i ) );
+    int prime = next_prime();
+    prime ++;
+    count++;
   }
+
+
   freeSieve();
   
   return 0;

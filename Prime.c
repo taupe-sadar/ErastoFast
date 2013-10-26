@@ -127,7 +127,7 @@ void crossSieve( int prime )
   if( highestSievedValue > 0 )
     calcFirstMultiple( prime, &idxInOffsets, &largeModuloOffset );
   
-  int multiple = offsets[ idxInOffsets ]* prime;
+  int multiple = ( offsets[ idxInOffsets ] + largeModuloOffset * MODULO ) * prime;
    
   int maxMultiple = MODULO * eratSize + highestSievedValue ;
   while( multiple < maxMultiple )
@@ -139,7 +139,7 @@ void crossSieve( int prime )
       idxInOffsets = 0; 
       largeModuloOffset += MODULO;
     }
-    multiple = prime*( largeModuloOffset +  offsets[ idxInOffsets ] );
+    multiple = prime*( largeModuloOffset * MODULO +  offsets[ idxInOffsets ] );
   }
 }
 
