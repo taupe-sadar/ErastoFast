@@ -1,4 +1,5 @@
 #include "Prime.h"
+#include "Chinois.h"
 #include "stdio.h"
 
 static int index = 0;
@@ -27,12 +28,22 @@ int main( int  argc, char ** argv )
   while(count<number)
   {
     int prime = next_prime();
-    printf( "%d\n", prime ) ;
+    //printf( "%d\n", prime ) ;
+    
     count++;
+    if( !longChinoisTest( 0,prime ) && prime !=2 )
+    {
+      printf( "Chinois bug 'not prime' : for %d\n", prime ) ;
+    }
   }
-
-
   freeSieve();
   
+  int i;
+  for( i = 3; i < 200; i+=2 )
+  {
+    if( !longChinoisTest( 0,i ) )
+      printf( "Chinois not prime : %d\n", i ) ;
+  }
+
   return 0;
 }
