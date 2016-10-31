@@ -1,7 +1,7 @@
 use warnings;
 use Data::Dumper;
 
-$#ARGV == 1 or die "Usage : $0 inputFile outputFile\n";
+$#ARGV == 2 or die "Usage : $0 inputFile outputFile package_name\n";
 open( CFILE, $ARGV[0] ) or die "Cannot open $ARGV[0]";
 open( PERLFILE, "> $ARGV[1]" ) or die "Cannot open $ARGV[1]";
 
@@ -34,7 +34,7 @@ close( CFILE);
 
 sub startOfPerlFile
 {
-  return 'package PrimeC;
+  return 'package '.$ARGV[2].';
 use warnings;
 use strict;
 
